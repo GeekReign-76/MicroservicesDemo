@@ -8,21 +8,34 @@ namespace BffApi
     {
         private readonly HttpClient _httpClient;
 
-        public ValidationServiceClient(IHttpClientFactory httpClientFactory)
+        // Use typed HttpClient injected by DI
+        public ValidationServiceClient(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClient = httpClient;
         }
 
         public async Task<ValidationResult> Validate(SubmitRequest request)
         {
-            // Replace the URL with running validation service endpoint
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5040/api/validation/validate", request);
+            // Use relative URL because BaseAddress is already set in Program.cs
+            var response = await _httpClient.PostAsJsonAsync("api/validation/validate", request);
 
+            // Return a graceful failure if the call fails
             if (!response.IsSuccessStatusCode)
-                return new ValidationResult { IsValid = false, Errors = new[] { "Validation service error" } };
+            {
+                return new ValidationResult
+                {
+                    IsValid = false,
+                    Errors = new[] { $"Validation service returned status code {response.StatusCode}" }
+                };
+            }
 
             var result = await response.Content.ReadFromJsonAsync<ValidationResult>();
-            return result ?? new ValidationResult { IsValid = false, Errors = new[] { "Null response from validation service" } };
+
+            return result ?? new ValidationResult
+            {
+                IsValid = false,
+                Errors = new[] { "Validation service returned null" }
+            };
         }
     }
 

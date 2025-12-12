@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -8,16 +9,18 @@ namespace BffApi
     {
         private readonly HttpClient _httpClient;
 
-        public ProcessingServiceClient(IHttpClientFactory httpClientFactory)
+        // Typed client expects HttpClient directly
+        public ProcessingServiceClient(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClient = httpClient;
         }
 
         public async Task<DataRecord> Process(SubmitRequest request)
         {
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5035/api/process", request);
+            // Relative URL because BaseAddress is set
+            var response = await _httpClient.PostAsJsonAsync("api/process", request);
 
-            response.EnsureSuccessStatusCode(); // throws if not 2xx
+            response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<DataRecord>();
             return result ?? throw new HttpRequestException("Processing service returned null");
@@ -33,6 +36,3 @@ namespace BffApi
         public string Metadata { get; init; } = "";
     }
 }
-
-
-public record DataRecord(int Id, string Name, int Value, DateTime ProcessedAt, string Metadata);

@@ -2,15 +2,21 @@ using BffApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add HttpClient for future external calls
-builder.Services.AddHttpClient();
+// Register typed HttpClients for services with BaseAddress
+builder.Services.AddHttpClient<ValidationServiceClient>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5040/"); //Validation service URL
+});
 
-// Register stub service clients
-builder.Services.AddSingleton<ValidationServiceClient>();
-builder.Services.AddSingleton<ProcessingServiceClient>();
+
+builder.Services.AddHttpClient<ProcessingServiceClient>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5035"); // Processing service URL
+});
 
 // CORS policy to allow React frontend at localhost:3000
 builder.Services.AddCors(options =>
