@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BffApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab414509f667ac73a44af25aba6126fa5aed5362")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+450a02eb04b39f6a58bb4e1ee8b4f9d42093cdbd")]
 [assembly: System.Reflection.AssemblyProductAttribute("BffApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BffApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

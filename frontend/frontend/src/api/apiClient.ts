@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { DataRecord } from '../components/types'; // adjust path relative to apiClient.ts
+import { DataRecord } from '../components/types'; // adjust relative path if needed
 
-// Use the BFF endpoint
 const api = axios.create({
-  baseURL: 'http://localhost:4000/api',
+  baseURL: 'http://localhost:4000/api', // BFF endpoint
   headers: { 'Content-Type': 'application/json' },
 });
 
