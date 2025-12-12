@@ -2,6 +2,8 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using BffApi.Models;
+
 
 namespace BffApi
 {
@@ -9,7 +11,6 @@ namespace BffApi
     {
         private readonly HttpClient _httpClient;
 
-        // Typed client expects HttpClient directly
         public ProcessingServiceClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -17,7 +18,6 @@ namespace BffApi
 
         public async Task<DataRecord> Process(SubmitRequest request)
         {
-            // Relative URL because BaseAddress is set
             var response = await _httpClient.PostAsJsonAsync("api/process", request);
 
             response.EnsureSuccessStatusCode();
@@ -27,12 +27,16 @@ namespace BffApi
         }
     }
 
-    public record DataRecord
+    // Matches what ProcessingService returns
+    public class DataRecord
     {
-        public int Id { get; init; }
-        public string Name { get; init; } = "";
-        public int Value { get; init; }
-        public DateTime ProcessedAt { get; init; }
-        public string Metadata { get; init; } = "";
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public int Value { get; set; }
+        public DateTime ProcessedAt { get; set; }
+
+        // Accepts any JSON object from ProcessingService
+        public object? Metadata { get; set; }
     }
+
 }

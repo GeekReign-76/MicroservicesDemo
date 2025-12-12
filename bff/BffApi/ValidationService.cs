@@ -9,7 +9,7 @@ public class ValidationServiceClient
 
     public async Task<ValidationResult> Validate(SubmitRequest request)
     {
-        var response = await _http.PostAsJsonAsync("/validate", request);
+        var response = await _http.PostAsJsonAsync("api/validation/validate", request);
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<ValidationResult>();

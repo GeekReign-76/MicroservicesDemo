@@ -1,4 +1,5 @@
 // ValidationService/Controllers/ValidationController.cs
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace ValidationService.Controllers
@@ -10,18 +11,46 @@ namespace ValidationService.Controllers
         [HttpPost("validate")]
         public IActionResult Validate([FromBody] SubmitRequest request)
         {
-            var isValid = !string.IsNullOrEmpty(request.Name) && request.Value > 0;
-            if (!isValid)
-                return BadRequest(new { Errors = new[] { "Invalid record" } });
+            // Basic validation logic
+            if (request == null)
+            {
+                return BadRequest(new ValidationResult
+                {
+                    IsValid = false,
+                    Errors = new[] { "Request body was null." }
+                });
+            }
 
-            return Ok(new ValidationResult { IsValid = true });
+            if (string.IsNullOrWhiteSpace(request.Name) || request.Value <= 0)
+            {
+                return BadRequest(new ValidationResult
+                {
+                    IsValid = false,
+                    Errors = new[] { "Invalid record" }
+                });
+            }
+
+            return Ok(new ValidationResult
+            {
+                IsValid = true,
+                Errors = Array.Empty<string>()
+            });
         }
     }
 
-    public record SubmitRequest(string Name, int Value, object Metadata);
-    public record ValidationResult
+    // IMPORTANT:
+    // Must be a CLASS, not a positional record.
+    // Must match BFF SubmitRequest EXACTLY.
+    public class SubmitRequest
     {
-        public bool IsValid { get; init; }
-        public string[] Errors { get; init; } = Array.Empty<string>();
+        public string Name { get; set; } = "";
+        public int Value { get; set; }
+        public object? Metadata { get; set; }
+    }
+
+    public class ValidationResult
+    {
+        public bool IsValid { get; set; }
+        public string[] Errors { get; set; } = Array.Empty<string>();
     }
 }
