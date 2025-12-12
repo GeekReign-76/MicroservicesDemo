@@ -1,6 +1,10 @@
-@ValidationService_HostAddress = http://localhost:5034
+@ValidationService_HostAddress = http://localhost:5040
 
-GET {{ValidationService_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{ValidationService_HostAddress}}/api/validate
+Content-Type: application/json
 
-###
+{
+  "name": "Test",
+  "value": 1,
+  "metadata": {}
+}

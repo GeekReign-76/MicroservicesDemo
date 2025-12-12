@@ -1,6 +1,10 @@
 @BffApi_HostAddress = http://localhost:5005
 
-GET {{BffApi_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{BffApi_HostAddress}}/api/submit
+Content-Type: application/json
 
-###
+{
+  "name": "Test",
+  "value": 1,
+  "metadata": {}
+}
