@@ -110,6 +110,7 @@
 /Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.csproj.CoreCompileInputs.cache
 /Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.MvcApplicationPartsAssemblyInfo.cs
 /Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.MvcApplicationPartsAssemblyInfo.cache
+/Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.sourcelink.json
 /Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/rjimswa.dswa.cache.json
 /Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
 /Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json

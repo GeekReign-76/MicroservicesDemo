@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/tianreid/MicroservicesDemo/ValidationService/ValidationService.csproj": {}
+    "/Users/tianreid/MicroservicesDemo/services/validation-service/ValidationService/ValidationService.csproj": {}
   },
   "projects": {
-    "/Users/tianreid/MicroservicesDemo/ValidationService/ValidationService.csproj": {
+    "/Users/tianreid/MicroservicesDemo/services/validation-service/ValidationService/ValidationService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/tianreid/MicroservicesDemo/ValidationService/ValidationService.csproj",
+        "projectUniqueName": "/Users/tianreid/MicroservicesDemo/services/validation-service/ValidationService/ValidationService.csproj",
         "projectName": "ValidationService",
-        "projectPath": "/Users/tianreid/MicroservicesDemo/ValidationService/ValidationService.csproj",
+        "projectPath": "/Users/tianreid/MicroservicesDemo/services/validation-service/ValidationService/ValidationService.csproj",
         "packagesPath": "/Users/tianreid/.nuget/packages/",
-        "outputPath": "/Users/tianreid/MicroservicesDemo/ValidationService/obj/",
+        "outputPath": "/Users/tianreid/MicroservicesDemo/services/validation-service/ValidationService/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/tianreid/.nuget/NuGet/NuGet.Config"

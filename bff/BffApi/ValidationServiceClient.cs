@@ -16,7 +16,7 @@ namespace BffApi
         public async Task<ValidationResult> Validate(SubmitRequest request)
         {
             // Replace the URL with running validation service endpoint
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5040/api/validate", request);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5040/api/validation/validate", request);
 
             if (!response.IsSuccessStatusCode)
                 return new ValidationResult { IsValid = false, Errors = new[] { "Validation service error" } };

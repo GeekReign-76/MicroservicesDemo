@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hto7pGOTPeo=",
+  "dgSpecHash": "v3W9DAEkZkg=",
   "success": true,
-  "projectFilePath": "/Users/tianreid/MicroservicesDemo/ValidationService/ValidationService.csproj",
+  "projectFilePath": "/Users/tianreid/MicroservicesDemo/services/validation-service/ValidationService/ValidationService.csproj",
   "expectedPackageFiles": [
     "/Users/tianreid/.nuget/packages/microsoft.aspnetcore.openapi/9.0.10/microsoft.aspnetcore.openapi.9.0.10.nupkg.sha512",
     "/Users/tianreid/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"

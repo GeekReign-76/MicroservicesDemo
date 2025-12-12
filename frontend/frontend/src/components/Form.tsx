@@ -12,11 +12,15 @@ export const RecordForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submit clicked', record); // log before sending
+    alert(`Submitting: ${JSON.stringify(record)}`); // temporary visual confirmation
+
     try {
       const data = await postRecord(record);
+      console.log('Response from API:', data);
       setResult(data);
     } catch (err) {
-      console.error(err);
+      console.error('Error submitting record:', err);
     }
   };
 
