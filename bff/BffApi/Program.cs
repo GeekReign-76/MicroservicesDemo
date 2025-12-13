@@ -13,25 +13,24 @@ builder.Services.AddHttpClient<ValidationServiceClient>(client =>
     client.BaseAddress = new Uri("http://localhost:5040/"); //Validation service URL
 });
 
-
 builder.Services.AddHttpClient<ProcessingServiceClient>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5035"); // Processing service URL
 });
 
-// CORS policy to allow React frontend at localhost:3000
+// CORS policy to allow all origins (development only)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:3000")
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
-// Enable CORS
-app.UseCors("AllowFrontend");
+// Enable CORS globally
+app.UseCors();
 
 // Minimal API POST endpoint
 app.MapPost("/api/submit", async (

@@ -1,18 +1,29 @@
 const CACHE_NAME = 'pwa-cache-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
+  '/',                // index route
+  '/index.html',      // main HTML
   '/favicon.ico',
   '/manifest.json',
-  '/handdrawn_192x192.png'
+  '/handdrawn_192x192.png',
+  '/handdrawn_512x512.png'
 ];
 
 // Install event: cache app shell
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME)
+      .then(async cache => {
+        // Fetch asset manifest to cache hashed JS/CSS
+        try {
+          const res = await fetch('/asset-manifest.json');
+          const manifest = await res.json();
+          const files = Object.values(manifest.files);
+          await cache.addAll([...ASSETS_TO_CACHE, ...files]);
+        } catch (err) {
+          console.warn('Failed to cache some assets:', err);
+          await cache.addAll(ASSETS_TO_CACHE);
+        }
+      })
   );
   self.skipWaiting();
 });
@@ -21,15 +32,13 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => key !== CACHE_NAME && caches.delete(key))
-      )
+      Promise.all(keys.map(key => key !== CACHE_NAME && caches.delete(key)))
     )
   );
   self.clients.claim();
 });
 
-// IndexedDB setup for queued requests
+// IndexedDB for queued POST requests
 const DB_NAME = 'offline-requests';
 const DB_STORE = 'requests';
 
@@ -58,29 +67,17 @@ async function replayRequests() {
   const tx = db.transaction(DB_STORE, 'readwrite');
   const store = tx.objectStore(DB_STORE);
 
-  const allRequests = [];
   store.openCursor().onsuccess = async event => {
     const cursor = event.target.result;
     if (!cursor) return;
 
     const req = cursor.value;
     try {
-      const response = await fetch(req.url, {
+      await fetch(req.url, {
         method: req.method,
         headers: req.headers,
         body: req.body
       });
-
-      // Parse response as JSON
-      const data = await response.clone().json();
-
-      // Notify all clients about the synced request
-      const clients = await self.clients.matchAll();
-      clients.forEach(client => {
-        client.postMessage({ type: 'sw-api-result', data });
-      });
-
-      // Remove request from store
       store.delete(cursor.key);
     } catch (err) {
       console.log('Retry failed, will try later', err);
@@ -96,7 +93,7 @@ async function replayRequests() {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Handle GET requests (cache-first)
+  // Cache-first for GET requests
   if (event.request.method === 'GET') {
     event.respondWith(
       caches.match(event.request).then(cachedResponse =>
@@ -114,12 +111,11 @@ self.addEventListener('fetch', event => {
     );
   }
 
-  // Handle POST requests to API (queue if offline)
+  // Queue POST requests if offline
   if (event.request.method === 'POST' && url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(event.request.clone())
         .catch(async () => {
-          // Save request for later
           const reqClone = {
             url: event.request.url,
             method: event.request.method,
@@ -135,14 +131,13 @@ self.addEventListener('fetch', event => {
   }
 });
 
-// Listen for online event to replay requests
+// Sync queued POST requests when back online
 self.addEventListener('sync', event => {
   if (event.tag === 'replay-requests') {
     event.waitUntil(replayRequests());
   }
 });
 
-// Listen for messages from the page to manually trigger replay
 self.addEventListener('message', event => {
   if (event.data === 'sync-requests') {
     event.waitUntil(replayRequests());

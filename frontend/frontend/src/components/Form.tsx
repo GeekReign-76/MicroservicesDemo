@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DataRecord } from './types';
 import { postRecord } from './api';
 
@@ -9,41 +9,30 @@ export const RecordForm: React.FC = () => {
     metadata: {}
   });
   const [result, setResult] = useState<DataRecord | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-
-  // Listen for service worker messages (replayed requests)
-  useEffect(() => {
-    const handleSWMessage = (event: MessageEvent) => {
-      const { type, data } = event.data;
-      if (type === 'sw-api-result') {
-        setResult(data);
-        setMessage('Request synced from offline queue.');
-      }
-    };
-    navigator.serviceWorker?.addEventListener('message', handleSWMessage);
-    return () => {
-      navigator.serviceWorker?.removeEventListener('message', handleSWMessage);
-    };
-  }, []);
+  const [statusMessage, setStatusMessage] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStatusMessage('Submitting record...');
     console.log('Submit clicked', record);
-    setMessage(null);
-    setResult(null);
 
     try {
       const data = await postRecord(record);
-      console.log('Response from API:', data);
-      setResult(data);
-    } catch (err: any) {
-      // If service worker queued the request while offline
-      if (err.response?.data?.offline) {
-        setMessage('You are offline. Request queued for later.');
+
+      if ((data as any).offline) {
+        // Service worker queued the request
+        console.log('Record queued for submission when back online.');
+        setStatusMessage('You are offline. Your record will be submitted when online.');
+        setResult(null);
       } else {
-        console.error('Error submitting record:', err);
-        setMessage('Error submitting record.');
+        // Successfully submitted
+        console.log('Response from API:', data);
+        setStatusMessage('Record submitted successfully!');
+        setResult(data);
       }
+    } catch (err) {
+      console.error('Error submitting record:', err);
+      setStatusMessage('Error submitting record. Please try again.');
     }
   };
 
@@ -65,8 +54,11 @@ export const RecordForm: React.FC = () => {
         <button type="submit">Submit</button>
       </form>
 
-      {message && <p>{message}</p>}
-      {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
+      {statusMessage && <p>{statusMessage}</p>}
+
+      {result && (
+        <pre>{JSON.stringify(result, null, 2)}</pre>
+      )}
     </div>
   );
 };
