@@ -29,4 +29,5 @@ spec:
     - protocol: TCP
       port: 4000
       targetPort: 4000
-  type: ClusterIP
+      nodePort: 30002
+  type: NodePort

@@ -1,3 +1,4 @@
+// bff/BffApi/Program.cs
 using BffApi;
 using BffApi.Models;
 using Microsoft.AspNetCore.Builder;
@@ -7,30 +8,30 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register typed HttpClients for services with BaseAddress
+// Register typed HttpClients for other services using Kubernetes service DNS
 builder.Services.AddHttpClient<ValidationServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5040/"); //Validation service URL
+    client.BaseAddress = new Uri("http://validation-service:5040/"); // Kubernetes service name
 });
 
 builder.Services.AddHttpClient<ProcessingServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5035"); // Processing service URL
+    client.BaseAddress = new Uri("http://processing-service:5035/"); // Kubernetes service name
 });
 
-// CORS policy to allow all origins (development only)
+// Allow CORS from frontend NodePort (development only)
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin()
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins("http://localhost:30001") // NodePort for frontend
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
-// Enable CORS globally
-app.UseCors();
+// Enable CORS
+app.UseCors("AllowFrontend");
 
 // Minimal API POST endpoint
 app.MapPost("/api/submit", async (
@@ -38,15 +39,19 @@ app.MapPost("/api/submit", async (
     ValidationServiceClient validationClient,
     ProcessingServiceClient processingClient) =>
 {
+    // Validate
     var validation = await validationClient.Validate(req);
     if (!validation.IsValid)
         return Results.BadRequest(validation.Errors);
 
+    // Process
     var processed = await processingClient.Process(req);
+
+    // Return result
     return Results.Ok(new { status = "success", record = processed });
 });
 
 app.Run();
 
-// DTO for POST requests
+// DTO for incoming requests
 public record SubmitRequest(string Name, int Value, object Metadata);

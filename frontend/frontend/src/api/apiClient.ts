@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { DataRecord } from '../components/types'; // adjust relative path if needed
+import { DataRecord } from '../components/types';
 
 const api = axios.create({
-  baseURL: 'http://localhost:4000/api', // BFF endpoint
+  baseURL: 'http://localhost:30002/api', // BFF NodePort
   headers: { 'Content-Type': 'application/json' },
 });
 
