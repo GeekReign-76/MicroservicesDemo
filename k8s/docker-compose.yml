@@ -1,0 +1,20 @@
+services:
+  processing:
+    image: geekreign/processing-service:latest
+    ports:
+      - "5035:5035"
+
+  validation:
+    image: geekreign/validation-service:latest
+    ports:
+      - "5040:5040"
+
+  bff:
+    image: geekreign/bff:latest
+    ports:
+      - "4000:4000"
+
+  frontend:
+    image: geekreign/frontend:latest
+    ports:
+      - "3000:3000"

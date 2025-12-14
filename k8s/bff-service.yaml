@@ -1,0 +1,12 @@
+# k8s/bff-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff
+spec:
+  type: ClusterIP
+  selector:
+    app: bff
+  ports:
+    - port: 4000
+      targetPort: 4000

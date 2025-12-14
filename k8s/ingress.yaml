@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: microservices.local
+      http:
+        paths:
+          - path: /frontend
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
+          - path: /api/bff
+            pathType: Prefix
+            backend:
+              service:
+                name: bff-service
+                port:
+                  number: 4000
+          - path: /api/processing
+            pathType: Prefix
+            backend:
+              service:
+                name: processing-service
+                port:
+                  number: 5035
+          - path: /api/validation
+            pathType: Prefix
+            backend:
+              service:
+                name: validation-service
+                port:
+                  number: 5040

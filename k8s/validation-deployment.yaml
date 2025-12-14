@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: validation-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validation
+  template:
+    metadata:
+      labels:
+        app: validation
+    spec:
+      containers:
+        - name: validation
+          image: validation-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5040   # ✅ corrected port

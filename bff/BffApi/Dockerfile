@@ -1,4 +1,4 @@
-# Use the .NET SDK to build the app
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
@@ -6,19 +6,20 @@ WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy the rest of the code
+# Copy all source files
 COPY . ./
 
-# Build and publish
+# Publish app
 RUN dotnet publish -c Release -o out
 
-# Use the runtime image
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
-COPY --from=build /app/out .
+
+# Copy published files from build stage
+COPY --from=build /app/out ./
 
 # Expose port
 EXPOSE 4000
 
-# Run the app
 ENTRYPOINT ["dotnet", "BffApi.dll"]

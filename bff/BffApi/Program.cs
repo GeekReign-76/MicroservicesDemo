@@ -1,6 +1,4 @@
-// bff/BffApi/Program.cs
 using BffApi;
-using BffApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,50 +6,79 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register typed HttpClients for other services using Kubernetes service DNS
+//
+// 🔗 HttpClients — container-to-container networking
+//
 builder.Services.AddHttpClient<ValidationServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("http://validation-service:5040/"); // Kubernetes service name
+    client.BaseAddress = new Uri("http://validation:5040/");
 });
 
 builder.Services.AddHttpClient<ProcessingServiceClient>(client =>
 {
-    client.BaseAddress = new Uri("http://processing-service:5035/"); // Kubernetes service name
+    client.BaseAddress = new Uri("http://processing:5035/");
 });
 
-// Allow CORS from frontend NodePort (development only)
+//
+// 🌍 CORS — relaxed for local testing
+//
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:30001") // NodePort for frontend
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
+// 🌐 Bind to all interfaces for Docker
+builder.WebHost.UseUrls("http://0.0.0.0:4000");
+
 var app = builder.Build();
 
-// Enable CORS
 app.UseCors("AllowFrontend");
 
-// Minimal API POST endpoint
+//
+// 🚀 Main BFF endpoint
+//
 app.MapPost("/api/submit", async (
     SubmitRequest req,
     ValidationServiceClient validationClient,
     ProcessingServiceClient processingClient) =>
 {
-    // Validate
     var validation = await validationClient.Validate(req);
     if (!validation.IsValid)
         return Results.BadRequest(validation.Errors);
 
-    // Process
     var processed = await processingClient.Process(req);
-
-    // Return result
     return Results.Ok(new { status = "success", record = processed });
+});
+
+//
+// ❤️ Health check
+//
+app.MapGet("/api/health", () =>
+    Results.Ok(new { status = "bff service healthy" })
+);
+
+//
+// 🔎 DEBUG — BFF → Validation connectivity
+//
+app.MapGet("/_debug/validation", async (ValidationServiceClient validationClient) =>
+{
+    var dummyRequest = new SubmitRequest("Test", 0, new { });
+    var result = await validationClient.Validate(dummyRequest);
+
+    return Results.Ok(new
+    {
+        from = "validation",
+        isValid = result.IsValid,
+        errors = result.Errors
+    });
 });
 
 app.Run();
 
-// DTO for incoming requests
+//
+// DTO
+//
 public record SubmitRequest(string Name, int Value, object Metadata);

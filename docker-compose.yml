@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  frontend:
+    image: frontend:latest
+    container_name: frontend
+    ports:
+      - "3000:80"             # Frontend served on host 3000
+    depends_on:
+      - bff
+    networks:
+      - microservices-net
+
+  bff:
+    image: bff:latest
+    container_name: bff
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:4000"
+    ports:
+      - "4000:4000"           # Host 4000 mapped to container 4000
+    depends_on:
+      - processing
+      - validation
+    networks:
+      - microservices-net
+
+  processing:
+    image: processing-service:latest
+    container_name: processing
+    environment:
+      DefaultConnection: "Server=localhost;Database=MyDb;User Id=sa;Password=YourPassword;"
+    ports:
+      - "5035:5035"           # Host 5035 mapped to container 5035
+    networks:
+      - microservices-net
+
+  validation:
+    image: validation-service:latest
+    container_name: validation
+    ports:
+      - "5040:5040"           # Host 5040 mapped to container 5040
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge

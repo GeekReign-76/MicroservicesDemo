@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "mpX7DAsn9rQ=",
+  "dgSpecHash": "bWHuXd+Q51U=",
   "success": true,
   "projectFilePath": "/Users/tianreid/MicroservicesDemo/services/processing-service/ProcessingService/ProcessingService.csproj",
   "expectedPackageFiles": [
@@ -34,7 +34,7 @@
     "/Users/tianreid/.nuget/packages/microsoft.extensions.primitives/9.0.0/microsoft.extensions.primitives.9.0.0.nupkg.sha512",
     "/Users/tianreid/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512",
     "/Users/tianreid/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
-    "/Users/tianreid/.nuget/packages/npgsql/9.0.0/npgsql.9.0.0.nupkg.sha512",
+    "/Users/tianreid/.nuget/packages/npgsql/10.0.0/npgsql.10.0.0.nupkg.sha512",
     "/Users/tianreid/.nuget/packages/npgsql.entityframeworkcore.postgresql/9.0.0/npgsql.entityframeworkcore.postgresql.9.0.0.nupkg.sha512",
     "/Users/tianreid/.nuget/packages/swashbuckle.aspnetcore/6.8.0/swashbuckle.aspnetcore.6.8.0.nupkg.sha512",
     "/Users/tianreid/.nuget/packages/swashbuckle.aspnetcore.swagger/6.8.0/swashbuckle.aspnetcore.swagger.6.8.0.nupkg.sha512",

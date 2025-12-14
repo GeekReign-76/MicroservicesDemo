@@ -1,78 +1,63 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using ProcessingService.Data;
+using ProcessingService;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using System;
+using Npgsql; // Ensure Npgsql is added via NuGet
 
-// Create builder
 var builder = WebApplication.CreateBuilder(args);
 
-// Environment info
-var env = builder.Environment.EnvironmentName;
-Console.WriteLine($"Environment: {env}");
-Console.WriteLine($"Working Directory: {Directory.GetCurrentDirectory()}");
+// 🔑 Ensure environment variables are loaded
+builder.Configuration.AddEnvironmentVariables();
 
-// Dynamically resolve project root for configuration
-var projectRoot = Directory.GetCurrentDirectory();
-
-// Ensure appsettings.json exists
-if (!File.Exists(Path.Combine(projectRoot, "appsettings.json")))
+// ✅ Read connection string from environment variables
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+if (string.IsNullOrWhiteSpace(connectionString))
 {
-    // fallback if running from a subfolder like bin/Debug/net9.0
-    projectRoot = Path.Combine(projectRoot, "..", "..", "..");
-    projectRoot = Path.GetFullPath(projectRoot);
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
 
-Console.WriteLine($"Using configuration path: {projectRoot}");
-
-// Build configuration
-var configuration = new ConfigurationBuilder()
-.SetBasePath(projectRoot)
-.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
-.AddEnvironmentVariables()
-.Build();
-
-// Read connection string
-var connectionString = configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine($"Runtime ConnectionString: {connectionString}");
-if (string.IsNullOrEmpty(connectionString))
+// Try to verify DB connection at startup
+try
 {
-    throw new InvalidOperationException($"Connection string 'DefaultConnection' not found in {projectRoot}");
+    using var testConn = new NpgsqlConnection(connectionString);
+    testConn.Open(); // Will throw if connection fails
+    Console.WriteLine("Processing service: database connection successful");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Processing service: database connection FAILED -> {ex.Message}");
+    throw; // Optional: stop the service if DB connection is required
 }
 
-// Register DbContext
-builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(connectionString, opts => opts.EnableRetryOnFailure()));
+// Configure Kestrel URL
+builder.WebHost.UseUrls("http://0.0.0.0:5035");
 
-// Add controllers
-builder.Services.AddControllers();
-
-// Add Swagger (OpenAPI)
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "ProcessingService API",
-        Version = "v1"
-    });
-});
-
-// Build app
 var app = builder.Build();
 
-// Enable Swagger only in development
-if (builder.Environment.IsDevelopment())
+// Health endpoint
+app.MapGet("/health", () => Results.Ok(new { status = "processing service healthy" }));
+
+// Optional DB health check endpoint
+app.MapGet("/db-health", async () =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    try
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProcessingService API V1");
-        c.RoutePrefix = string.Empty; // Swagger at root /
-    });
-}
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync();
+        return Results.Ok(new { db = "connected" });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
 
-// Map controllers
-app.MapControllers();
+// Example processing endpoint
+app.MapPost("/processing-service", async (object input) =>
+{
+    // Your processing logic here
+    return Results.Ok(new { processed = true, input });
+});
 
-// Run the app
 app.Run();

@@ -1,33 +1,11 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: validation-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: validation
-  template:
-    metadata:
-      labels:
-        app: validation
-    spec:
-      containers:
-        - name: validation
-          image: validation-service:latest
-          ports:
-            - containerPort: 5040
----
 apiVersion: v1
 kind: Service
 metadata:
-  name: validation-service
+  name: validation
 spec:
+  type: ClusterIP
   selector:
     app: validation
   ports:
-    - protocol: TCP
-      port: 5040
+    - port: 5040      # ✅ service port
       targetPort: 5040
-      nodePort: 30004
-  type: NodePort
