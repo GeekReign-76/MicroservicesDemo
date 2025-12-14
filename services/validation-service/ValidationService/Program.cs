@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Kestrel URL
 builder.WebHost.UseUrls("http://0.0.0.0:5040");
 
 var app = builder.Build();
@@ -11,19 +12,14 @@ var app = builder.Build();
 // Health endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "validation service healthy" }));
 
-// Updated validation endpoint matching BFF expectation
-app.MapPost("/api/validation/validate", async (SubmitRequest request) =>
+// Example validation endpoint (async)
+app.MapPost("/validation-service", async (object input) =>
 {
-    // Replace this with your real validation logic
-    Console.WriteLine($"Received validation request: {request}");
+    // Simulate async processing or DB call
+    await Task.Delay(10); // Dummy async operation
 
-    // Example response
-    var result = new ValidationResult(isValid: true, errors: Array.Empty<string>());
-    return Results.Ok(result);
+    // Simple dummy validation
+    return Results.Ok(new { isValid = true, errors = Array.Empty<string>() });
 });
 
 app.Run();
-
-// --- Type definitions must go first ---
-public record SubmitRequest(string Name, int Value, Dictionary<string, object> Metadata);
-public record ValidationResult(bool isValid, string[] errors);

@@ -3,31 +3,31 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using System;
-using Npgsql; // Ensure Npgsql is added via NuGet
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔑 Ensure environment variables are loaded
+// Load environment variables
 builder.Configuration.AddEnvironmentVariables();
 
-// ✅ Read connection string from environment variables
+// Read connection string
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
 
-// Try to verify DB connection at startup
+// Test DB connection asynchronously at startup
 try
 {
-    using var testConn = new NpgsqlConnection(connectionString);
-    testConn.Open(); // Will throw if connection fails
+    await using var testConn = new NpgsqlConnection(connectionString);
+    await testConn.OpenAsync();
     Console.WriteLine("Processing service: database connection successful");
 }
 catch (Exception ex)
 {
     Console.WriteLine($"Processing service: database connection FAILED -> {ex.Message}");
-    throw; // Optional: stop the service if DB connection is required
+    throw;
 }
 
 // Configure Kestrel URL
@@ -38,12 +38,12 @@ var app = builder.Build();
 // Health endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "processing service healthy" }));
 
-// Optional DB health check endpoint
+// DB health check endpoint (async)
 app.MapGet("/db-health", async () =>
 {
     try
     {
-        using var conn = new NpgsqlConnection(connectionString);
+        await using var conn = new NpgsqlConnection(connectionString);
         await conn.OpenAsync();
         return Results.Ok(new { db = "connected" });
     }
@@ -53,10 +53,15 @@ app.MapGet("/db-health", async () =>
     }
 });
 
-// Example processing endpoint
+// Example processing endpoint (async)
 app.MapPost("/processing-service", async (object input) =>
 {
-    // Your processing logic here
+    // Simulate some async DB call
+    await using var conn = new NpgsqlConnection(connectionString);
+    await conn.OpenAsync();
+    await using var cmd = new NpgsqlCommand("SELECT 1", conn);
+    await cmd.ExecuteScalarAsync();
+
     return Results.Ok(new { processed = true, input });
 });
 
