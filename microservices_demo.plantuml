@@ -1,24 +1,16 @@
-@startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+@startuml MicroservicesDemo
 
-Person(user, "End User")
+!define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master
+!includeurl C4P/C4_Container.puml
 
-System_Boundary(msd, "MicroservicesDemo Platform") {
+Person(user, "End User", "Someone using the app")
 
-    Container(frontend, "Frontend SPA", "React + TypeScript + Nginx",
-        "Provides user interface and communicates with BFF")
-
-    Container(bff, "BFF API", "ASP.NET Core",
-        "Aggregates backend services and shields frontend from complexity")
-
-    Container(processing, "Processing Service", "ASP.NET Core",
-        "Handles core domain processing logic")
-
-    Container(validation, "Validation Service", "ASP.NET Core",
-        "Performs validation logic as a separate concern")
-
-    Container(k8s, "Kubernetes Cluster", "Kubernetes",
-        "Orchestrates containers and manages service discovery")
+System_Boundary(msd, "MicroservicesDemo") {
+    Container(frontend, "Frontend SPA", "React + TypeScript + Nginx", "Provides user interface")
+    Container(bff, "BFF API", "ASP.NET Core", "Aggregates backend services")
+    Container(processing, "Processing Service", "ASP.NET Core", "Handles core processing logic")
+    Container(validation, "Validation Service", "ASP.NET Core", "Performs validation logic")
+    Container(k8s, "Kubernetes Cluster", "Kubernetes", "Manages container orchestration")
 }
 
 Rel(user, frontend, "Uses", "HTTPS")

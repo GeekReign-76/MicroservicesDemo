@@ -1,0 +1,91 @@
+@startuml MicroservicesDemo
+
+' Import C4-PlantUML library
+!define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master
+!includeurl C4P/C4_Container.puml
+
+'------------------------
+' Users
+'------------------------
+Person(user, "End User", "Someone using the app")
+
+'------------------------
+' System Boundary
+'------------------------
+System_Boundary(msd, "MicroservicesDemo Platform") {
+
+    '------------------------
+    ' Frontend
+    '------------------------
+    Container(frontend, "Frontend SPA", "React + TypeScript + Nginx", "Provides user interface and communicates with BFF")
+    Container(frontend_docker, "Frontend Container", "Docker", "Frontend deployed as Docker container")
+    
+    ' Frontend YAML files
+    Container(frontend_yaml, "Frontend YAMLs", "YAML", "frontend-deployment.yaml\nfrontend-service.yaml\nfrontend-nginx-config.yaml\nfrontend.yaml")
+
+    '------------------------
+    ' Backend for Frontend
+    '------------------------
+    Container(bff, "BFF API", "ASP.NET Core", "Aggregates backend services")
+    Container(bff_docker, "BFF Container", "Docker", "BFF deployed as Docker container")
+    
+    ' BFF YAML files
+    Container(bff_yaml, "BFF YAMLs", "YAML", "bff-deployment.yaml\nbff-service.yaml\nbff.yaml")
+
+    '------------------------
+    ' Processing Service
+    '------------------------
+    Container(processing, "Processing Service", "ASP.NET Core", "Handles core domain processing logic")
+    Container(processing_docker, "Processing Container", "Docker", "Processing deployed as Docker container")
+    
+    ' Processing YAML files
+    Container(processing_yaml, "Processing YAMLs", "YAML", "processing-deployment.yaml\nprocessing-service.yaml")
+
+    '------------------------
+    ' Validation Service
+    '------------------------
+    Container(validation, "Validation Service", "ASP.NET Core", "Performs validation logic")
+    Container(validation_docker, "Validation Container", "Docker", "Validation deployed as Docker container")
+    
+    ' Validation YAML files
+    Container(validation_yaml, "Validation YAMLs", "YAML", "validation-deployment.yaml\nvalidation-service.yaml")
+
+    '------------------------
+    ' Kubernetes Cluster
+    '------------------------
+    Container(k8s, "Kubernetes Cluster", "Kubernetes", "Manages orchestration of containers and services")
+}
+
+'------------------------
+' Relationships: User -> Services
+'------------------------
+Rel(user, frontend, "Uses", "HTTPS")
+Rel(frontend, bff, "Calls", "REST/HTTP")
+Rel(bff, processing, "Delegates processing to", "REST/HTTP")
+Rel(bff, validation, "Delegates validation to", "REST/HTTP")
+
+'------------------------
+' Relationships: Docker -> Services
+'------------------------
+Rel(frontend, frontend_docker, "Deployed to")
+Rel(bff, bff_docker, "Deployed to")
+Rel(processing, processing_docker, "Deployed to")
+Rel(validation, validation_docker, "Deployed to")
+
+'------------------------
+' Relationships: YAML -> Services
+'------------------------
+Rel(frontend_yaml, frontend, "Deploys")
+Rel(bff_yaml, bff, "Deploys")
+Rel(processing_yaml, processing, "Deploys")
+Rel(validation_yaml, validation, "Deploys")
+
+'------------------------
+' Relationships: Kubernetes
+'------------------------
+Rel(frontend_docker, k8s, "Managed by")
+Rel(bff_docker, k8s, "Managed by")
+Rel(processing_docker, k8s, "Managed by")
+Rel(validation_docker, k8s, "Managed by")
+
+@enduml
