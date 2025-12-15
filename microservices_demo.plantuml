@@ -1,26 +1,66 @@
 @startuml MicroservicesDemo
 
+' Include C4-PlantUML library
 !define C4P https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master
 !includeurl C4P/C4_Container.puml
 
+' Users
 Person(user, "End User", "Someone using the app")
 
-System_Boundary(msd, "MicroservicesDemo") {
-    Container(frontend, "Frontend SPA", "React + TypeScript + Nginx", "Provides user interface")
+' System boundary
+System_Boundary(msd, "MicroservicesDemo Platform") {
+
+    ' Frontend Pods
+    Container(frontend1, "Frontend Pod 1", "React + TypeScript + Nginx", "Handles user requests")
+    Container(frontend2, "Frontend Pod 2", "React + TypeScript + Nginx", "Handles user requests")
+    
+    ' Load Balancer
+    Container(lb, "Frontend Load Balancer", "Nginx/HAProxy", "Distributes traffic across frontend pods")
+    
+    ' Backend for frontend
     Container(bff, "BFF API", "ASP.NET Core", "Aggregates backend services")
-    Container(processing, "Processing Service", "ASP.NET Core", "Handles core processing logic")
+    
+    ' Processing service
+    Container(processing, "Processing Service", "ASP.NET Core", "Handles core domain processing logic")
+    
+    ' Validation service
     Container(validation, "Validation Service", "ASP.NET Core", "Performs validation logic")
+    
+    ' Kubernetes cluster
     Container(k8s, "Kubernetes Cluster", "Kubernetes", "Manages container orchestration")
+    
+    ' Docker deployment nodes
+    Container(frontend1_docker, "Frontend Pod 1 Container", "Docker", "Frontend Pod 1 deployed")
+    Container(frontend2_docker, "Frontend Pod 2 Container", "Docker", "Frontend Pod 2 deployed")
+    Container(lb_docker, "Load Balancer Container", "Docker", "Load Balancer deployed")
+    Container(bff_docker, "BFF Container", "Docker", "BFF deployed")
+    Container(processing_docker, "Processing Container", "Docker", "Processing deployed")
+    Container(validation_docker, "Validation Container", "Docker", "Validation deployed")
 }
 
-Rel(user, frontend, "Uses", "HTTPS")
-Rel(frontend, bff, "Calls", "REST/HTTP")
+' Relationships
+Rel(user, lb, "Uses", "HTTPS")
+Rel(lb, frontend1, "Routes traffic to")
+Rel(lb, frontend2, "Routes traffic to")
+
+Rel(frontend1, bff, "Calls", "REST/HTTP")
+Rel(frontend2, bff, "Calls", "REST/HTTP")
 Rel(bff, processing, "Delegates processing to", "REST/HTTP")
 Rel(bff, validation, "Delegates validation to", "REST/HTTP")
 
-Rel(frontend, k8s, "Deployed to")
-Rel(bff, k8s, "Deployed to")
-Rel(processing, k8s, "Deployed to")
-Rel(validation, k8s, "Deployed to")
+' Deployment relationships
+Rel(frontend1, frontend1_docker, "Deployed to")
+Rel(frontend2, frontend2_docker, "Deployed to")
+Rel(lb, lb_docker, "Deployed to")
+Rel(bff, bff_docker, "Deployed to")
+Rel(processing, processing_docker, "Deployed to")
+Rel(validation, validation_docker, "Deployed to")
+
+Rel(frontend1_docker, k8s, "Managed by")
+Rel(frontend2_docker, k8s, "Managed by")
+Rel(lb_docker, k8s, "Managed by")
+Rel(bff_docker, k8s, "Managed by")
+Rel(processing_docker, k8s, "Managed by")
+Rel(validation_docker, k8s, "Managed by")
 
 @enduml

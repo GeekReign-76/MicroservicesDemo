@@ -24,6 +24,12 @@ System_Boundary(msd, "MicroservicesDemo Platform") {
     Container(frontend_yaml, "Frontend YAMLs", "YAML", "frontend-deployment.yaml\nfrontend-service.yaml\nfrontend-nginx-config.yaml\nfrontend.yaml")
 
     '------------------------
+    ' Frontend Load Balancer
+    '------------------------
+    Container(lb, "Frontend Load Balancer", "Nginx/HAProxy", "Distributes traffic across frontend pods")
+    Container(lb_docker, "Load Balancer Container", "Docker", "Load balancer deployed as Docker container")
+
+    '------------------------
     ' Backend for Frontend
     '------------------------
     Container(bff, "BFF API", "ASP.NET Core", "Aggregates backend services")
@@ -57,9 +63,14 @@ System_Boundary(msd, "MicroservicesDemo Platform") {
 }
 
 '------------------------
-' Relationships: User -> Services
+' Relationships: User -> Load Balancer -> Frontend
 '------------------------
-Rel(user, frontend, "Uses", "HTTPS")
+Rel(user, lb, "Uses", "HTTPS")
+Rel(lb, frontend, "Routes traffic to")
+
+'------------------------
+' Relationships: Frontend -> BFF -> Services
+'------------------------
 Rel(frontend, bff, "Calls", "REST/HTTP")
 Rel(bff, processing, "Delegates processing to", "REST/HTTP")
 Rel(bff, validation, "Delegates validation to", "REST/HTTP")
@@ -68,6 +79,7 @@ Rel(bff, validation, "Delegates validation to", "REST/HTTP")
 ' Relationships: Docker -> Services
 '------------------------
 Rel(frontend, frontend_docker, "Deployed to")
+Rel(lb, lb_docker, "Deployed to")
 Rel(bff, bff_docker, "Deployed to")
 Rel(processing, processing_docker, "Deployed to")
 Rel(validation, validation_docker, "Deployed to")
@@ -84,6 +96,7 @@ Rel(validation_yaml, validation, "Deploys")
 ' Relationships: Kubernetes
 '------------------------
 Rel(frontend_docker, k8s, "Managed by")
+Rel(lb_docker, k8s, "Managed by")
 Rel(bff_docker, k8s, "Managed by")
 Rel(processing_docker, k8s, "Managed by")
 Rel(validation_docker, k8s, "Managed by")
