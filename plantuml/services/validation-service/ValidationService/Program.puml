@@ -1,0 +1,4 @@
+@startuml
+class "Empty`1"<T> {
+}
+@enduml

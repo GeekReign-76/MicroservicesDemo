@@ -1,0 +1,9 @@
+@startuml
+class DataRecord {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>> = ""
+    + Value : int <<get>> <<set>>
+    + Metadata : string? <<get>> <<set>>
+}
+DataRecord o-> "ProcessedAt" DateTime
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+class DataContext {
+    + DataContext(options:DbContextOptions<DataContext>)
+}
+class "DbSet`1"<T> {
+}
+DbContext <|-- DataContext
+DataContext --> "DataRecords<DataRecord>" "DbSet`1"
+@enduml

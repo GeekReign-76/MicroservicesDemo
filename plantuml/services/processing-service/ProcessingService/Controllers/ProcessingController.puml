@@ -1,0 +1,12 @@
+@startuml
+class ProcessController {
+    + ProcessController(context:DataContext)
+    + <<async>> Process(request:SubmitRequest) : Task<IActionResult>
+}
+class SubmitRequest {
+    + Name : string <<get>> <<set>> = ""
+    + Value : int <<get>> <<set>>
+    + Metadata : object? <<get>> <<set>>
+}
+ControllerBase <|-- ProcessController
+@enduml

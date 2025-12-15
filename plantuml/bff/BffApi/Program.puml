@@ -1,0 +1,9 @@
+@startuml
+class SubmitRequest <<record>> {
+    + Name : string <<get>> <<init>>
+    + Value : int <<get>> <<init>>
+    + Metadata : object <<get>> <<init>>
+}
+class "AddHttpClient`1"<T> {
+}
+@enduml

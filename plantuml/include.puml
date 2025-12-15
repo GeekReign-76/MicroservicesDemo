@@ -1,0 +1,30 @@
+@startuml
+!include ./bff/BffApi/ValidationService.puml
+!include ./bff/BffApi/ValidationController.puml
+!include ./bff/BffApi/ValidationServiceClient.puml
+!include ./bff/BffApi/ProcessingServiceClient.puml
+!include ./bff/BffApi/Program.puml
+!include ./bff/BffApi/Models/SubmitRequest.puml
+!include ./services/validation-service/ValidationService/Program.puml
+!include ./services/processing-service/ProcessingService/Program.puml
+!include ./services/validation-service/ValidationService/Controllers/ValidationController.puml
+!include ./services/processing-service/ProcessingService/Migrations/DataContextModelSnapshot.puml
+!include ./services/processing-service/ProcessingService/Migrations/20251203040411_InitialCreate.Designer.puml
+!include ./services/processing-service/ProcessingService/Migrations/20251203040411_InitialCreate.puml
+!include ./services/processing-service/ProcessingService/Models/DataRecord.puml
+!include ./services/processing-service/ProcessingService/Controllers/ProcessingController.puml
+!include ./services/processing-service/ProcessingService/Data/DataContextFactory.puml
+!include ./services/processing-service/ProcessingService/Data/DataContext.puml
+!include ./bff/BffApi/obj/Debug/net9.0/BffApi.MvcApplicationPartsAssemblyInfo.puml
+!include ./bff/BffApi/obj/Debug/net9.0/BffApi.GlobalUsings.g.puml
+!include ./bff/BffApi/obj/Debug/net9.0/.NETCoreApp,Version=v9.0.AssemblyAttributes.puml
+!include ./bff/BffApi/obj/Debug/net9.0/BffApi.AssemblyInfo.puml
+!include ./services/validation-service/ValidationService/obj/Debug/net9.0/.NETCoreApp,Version=v9.0.AssemblyAttributes.puml
+!include ./services/validation-service/ValidationService/obj/Debug/net9.0/ValidationService.GlobalUsings.g.puml
+!include ./services/validation-service/ValidationService/obj/Debug/net9.0/ValidationService.MvcApplicationPartsAssemblyInfo.puml
+!include ./services/validation-service/ValidationService/obj/Debug/net9.0/ValidationService.AssemblyInfo.puml
+!include ./services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.AssemblyInfo.puml
+!include ./services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.GlobalUsings.g.puml
+!include ./services/processing-service/ProcessingService/obj/Debug/net9.0/.NETCoreApp,Version=v9.0.AssemblyAttributes.puml
+!include ./services/processing-service/ProcessingService/obj/Debug/net9.0/ProcessingService.MvcApplicationPartsAssemblyInfo.puml
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+class SubmitRequest {
+    + Name : string <<get>> <<set>> = ""
+    + Value : int <<get>> <<set>>
+}
+SubmitRequest --> "Metadata<string,string>" "Dictionary`2"
+@enduml

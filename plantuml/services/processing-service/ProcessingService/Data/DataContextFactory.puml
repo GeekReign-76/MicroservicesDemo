@@ -1,0 +1,8 @@
+@startuml
+class DataContextFactory {
+    + CreateDbContext(args:string[]) : DataContext
+}
+class "IDesignTimeDbContextFactory`1"<T> {
+}
+"IDesignTimeDbContextFactory`1" "<DataContext>" <|-- DataContextFactory
+@enduml

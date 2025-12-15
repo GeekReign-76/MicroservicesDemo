@@ -1,0 +1,6 @@
+@startuml
+class ValidationServiceClient {
+    + ValidationServiceClient(http:HttpClient)
+    + <<async>> Validate(request:SubmitRequest) : Task<ValidationResult>
+}
+@enduml

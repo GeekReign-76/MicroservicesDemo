@@ -1,0 +1,16 @@
+@startuml
+class ValidationController {
+    + Validate(req:SubmitRequest) : ActionResult<ValidationResult>
+}
+class ValidationResult <<record>> {
+    + IsValid : bool <<get>> <<init>>
+}
+class FieldError <<record>> {
+    + Field : string <<get>> <<init>>
+    + Message : string <<get>> <<init>>
+}
+class "List`1"<T> {
+}
+ControllerBase <|-- ValidationController
+ValidationResult --> "Errors<FieldError>" "List`1"
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+class ValidationServiceClient {
+    + ValidationServiceClient(httpClient:HttpClient)
+    + <<async>> Validate(request:SubmitRequest) : Task<ValidationResult>
+    + <<async>> Health() : Task<string>
+}
+class ValidationResult <<record>> {
+    + IsValid : bool <<get>> <<init>>
+}
+class FieldError <<record>> {
+    + Message : string <<get>> <<init>>
+}
+class "List`1"<T> {
+}
+ValidationResult --> "Errors<FieldError>" "List`1"
+@enduml
